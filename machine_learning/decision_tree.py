@@ -1,100 +1,116 @@
 import math
-import operator
-from pprint import pprint
 
-class None:
-    def __init__(self, feature, children):
-        self.feature = feature
-        self.children = children
+class DecisionNode:
 
-class Leaf:
-    def __init__(self, class):
-        self.class = class
+    def __init__(self, col=-1, value=None, labels=None, lb=None, rb=None):
+        self.col = col
+        self.value = value
+        self.labels = labels
+        self.left_branch = lb # true branch
+        self.right_branch = rb # false branch
 
-# TODO: implement a decision tree
+def divide_set(rows, column, value):
+    split_function = None
+    if isinstance(value, int) or isinstance(value, float):
+        split_function = lambda row:row[column] >= value
+    else:
+        split_function = lambda row: row[column] == value
 
-def initial_entropy(data):
-    neg = len([t for t in data if t[1] == 0])
-    poz = len(data) - neg
-    e1 = -(poz/len(data)) * math.log2(poz/len(data))
-    e2 = -(neg/len(data)) * math.log2(neg/len(data))
-    return e1 + e2
+    set1 = [r for r in rows if split_function(r)]
+    set2 = [r for r in rows if not split_function(r)]
 
-def calculate_entropy(data, feature, values):
+    return set1, set2
+
+def count_labels(rows):
+    labels = {}
+    for row in rows:
+        label = row[-1]
+        if label not in labels:
+            labels[label] = 1
+        else:
+            labels[label] +=1
+    return labels
+
+def entropy(rows):
+    labels = count_labels(rows)
     entropy = 0
-    for val in values:
-        neg = len([t for t in data if t[1] == 0 and val in t[0]])
-        poz = len([t for t in data if t[1] == 1 and val in t[0]])
-        all = poz + neg
-        if poz == 0:
-            e1 = 0
-        else:
-            e1 = -(poz/all) * math.log2(poz/all)
-
-        if neg == 0:
-            e2 = 0
-        else:
-            e2 = -(neg/all) * math.log2(neg/all)
-        entropy += e1 + e2
+    for l in labels.keys():
+        p = float(labels[l]) / len(rows)
+        entropy -= p * math.log2(p)
     return entropy
 
+def construct_tree(rows, score_func=entropy):
+    if len(rows) == 0:
+        return DecisionNode()
+    score = score_func(rows)
 
-def calculate_gain(data, feature, values, level_entropy):
-    return level_entropy + calculate_entropy(data, feature, values)
+    max_gain = 0
+    split_criteria = None
+    best_sets = None
 
+    column_no = len(rows[0]) - 1
+    for col in range(column_no):
+        for val in [v[col] for v in rows]:
+            set1, set2 = divide_set(rows, col, val)
 
-def train(data, feature_values, level_entropy, tree):
-    # if len(set([d[1] for d in data
-    #             if any([True for v in feature_values.values() if v in d[0]])
-    #             ])
-    #        ) == 1:
-    if not feature_values:
-        return
+            p = float(len(set1)) / len(rows)
+            gain = score - p * score_func(set1) - (1-p) * score_func(set2)
+            if gain > max_gain and set1 and set2:
+                max_gain = gain
+                split_criteria = col, val
+                best_sets = set1, set2
+    if max_gain > 0:
+        leftBranch = construct_tree(best_sets[0])
+        rightBranch = construct_tree(best_sets[1])
+        return DecisionNode(col=split_criteria[0],
+                            value=split_criteria[1],
+                            lb = leftBranch,
+                            rb = rightBranch
+                            )
+    else: return DecisionNode(labels=count_labels(rows))
 
-    gain_score = {}
-    for feature in feature_values.keys():
-        gain_score[feature] = calculate_gain(data, feature, feature_values[feature], level_entropy)
+# TODO:
+# def display_tree()
 
-    split_feature, level_entropy = max(gain_score.items(), key=operator.itemgetter(1))
-    tree.feature = split_feature
-    pprint(gain_score)
-    print(split_feature, level_entropy)
-
-    next_values = feature_values[split_feature]
-    del feature_values[split_feature]
-    for value in next_values:
-        examples = [d[1] for d in data if value in d[0]]
-        if len(set(examples)) == 1:
-
-        train(data, feature_values, level_entropy)
-
-def predict():
-    pass
+def classify(obsertvation, tree):
+    if tree.labels:
+        return tree.labels
+    else:
+        v = obsertvation[tree.col]
+        branch = None
+        if isinstance(v, float) or isinstance(v, int):
+            if v >= tree.value: branch = tree.left_branch
+            else: branch = tree.right_branch
+        else:
+            if v == tree.value: branch = tree.left_branch
+            else: branch = tree.right_branch
+        return classify(obsertvation, branch)
 
 def main():
 
-    feature_values = {"outlook": ["sunny", "overcast", "rain"],
-                      "humidity": ["high", "normal"],
-                      "wind": ["strong", "weak"],
-                      }
-
-    # 0: no, 1: yes
-    data = [(["sunny", "high", "strong"], 0),
-            (["sunny", "normal", "weak"], 1),
-            (["sunny", "normal", "strong"], 1),
-            (["sunny", "high", "weak"], 0),
-            (["overcast", "normal", "weak"], 1),
-            (["overcast", "high", "weak"], 1),
-            (["overcast", "normal", "strong"], 1),
-            (["overcast", "high", "strong"], 1),
-            (["rain", "normal", "strong"], 0),
-            (["rain", "normal", "weak"], 1),
-            (["rain", "high", "strong"], 0),
+    data = [['slashdot', 'USA', 'yes', 18, 'None'],
+            ['google', 'France', 'yes', 23, 'Premium'],
+            ['digg', 'USA', 'yes', 24, 'Basic'],
+            ['kiwitobes', 'France', 'yes', 23, 'Basic'],
+            ['google', 'UK', 'no', 21, 'Premium'],
+            ['direct', 'New Zealand', 'no', 12, 'None'],
+            ['direct', 'UK', 'no', 21, 'Basic'],
+            ['google', 'USA', 'no', 24, 'Premium'],
+            ['slashdot', 'France', 'yes', 19, 'None'],
+            ['digg', 'USA', 'no', 18, 'None'],
+            ['google', 'UK', 'no', 18, 'None'],
+            ['kiwitobes', 'UK', 'no', 19, 'None'],
+            ['digg', 'New Zealand', 'yes', 12, 'Basic'],
+            ['slashdot', 'UK', 'no', 21, 'None'],
+            ['google', 'UK', 'yes', 18, 'Basic'],
+            ['kiwitobes', 'France', 'yes', 19, 'Basic'],
             ]
 
-    print(initial_entropy(data))
+    tree = construct_tree(data)
+    label = classify(['direct', 'USA', 'yes', 5] , tree)
+    print(label)
+    return
 
-    train(data, feature_values, initial_entropy(data), Node(None, None))
 
 if __name__ == "__main__":
     main()
