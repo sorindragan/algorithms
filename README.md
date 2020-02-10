@@ -46,9 +46,9 @@ Algorithms proposed for GitHub implementation
 ## Data Structures
 
 - [x]  Simple Linked List
-- [ ]  Circular Linked List (Ring buffer)
+- [x]  Circular Linked List (Ring buffer)
 - [x]  Stack
-- [ ]  Queue
+- [x]  Queue
 - [ ]  Binary Tree
 - [ ]  Self-balancing Binary Tree
 - [ ]  Hash
