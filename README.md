@@ -4,14 +4,14 @@ Algorithms proposed for GitHub implementation
 
 ## Sorting
 
+---
+
 - [ ]  Bubblesort
 - [ ]  Mergesort
 - [ ]  Quicksort
 - [ ]  Heapsort
 - [ ]  Insertionsort
 - [ ]  Radixsort
-
----
 
 ## Graph Paths
 
@@ -24,14 +24,20 @@ Algorithms proposed for GitHub implementation
 
 ## Artificial Intelligence
 
+---
+
 - [ ]  Mini-max (alpha-beta)
 - [ ]  Monte Carlo Search Tree
 
 ## Strings
 
+---
+
 - [ ]  KMP matching algorithm
 
 ## Dynamic Programming
+
+---
 
 - [ ]  Knapsack (also with genetic algorithms)
 - [ ]  Traveling Salesman
@@ -40,10 +46,12 @@ Algorithms proposed for GitHub implementation
 
 ---
 
-- [ ]  Binary Search
-- [ ]  Linear Search
+- [x]  Binary Search
+- [x]  Linear Search
 
 ## Data Structures
+
+---
 
 - [x]  Simple Linked List
 - [x]  Circular Linked List (Ring buffer)
@@ -53,9 +61,9 @@ Algorithms proposed for GitHub implementation
 - [ ]  Self-balancing Binary Tree
 - [ ]  Hash
 
----
-
 ## Machine Learning
+
+---
 
 - [ ]  Linear Regression
 - [x]  Decision Tree
