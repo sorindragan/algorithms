@@ -65,7 +65,7 @@ Algorithms proposed for GitHub implementation
 
 ---
 
-- [ ]  Linear Regression
+- [x]  Linear Regression
 - [x]  Decision Tree
 - [ ]  Support Vector Machine
 - [x]  KNN
