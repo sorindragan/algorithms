@@ -111,10 +111,10 @@ def expansion(node):
     state = copy.deepcopy(node.state)
     i, j = np.where(state.board == 0) 
     available_actions = list(zip(i, j))
-    a_i, a_j = random.choice(available_actions)
     # create children nodes for all available actions
     for move in available_actions:
-        new_board = state.board
+        a_i, a_j = move
+        new_board = copy.deepcopy(state.board)
         new_board[a_i][a_j] = node.state.symbol
         new_state = State(board = new_board, symbol=state.symbol)
         new_node = Node(new_state, node)
@@ -143,40 +143,90 @@ def simulate(start_board=np.zeros((3,3)), player=X, iterations=10):
     for _ in range(iterations):
         traverse(tree)
 
+    # print([f"Node: {n.state.board[0]}, {n.reward}, {n.visits}, {calculate_UCB1(n)}" for n in tree.children])
     return get_best_action(tree)
+
+def outcome(state):
+    if state.value == 1:
+        return state.symbol
+    if state.value == -1:
+        return state.opponent_symbol
+    return 0
 
 
 def play_game():
-    state = simulate()
-    print(state.board)
-    print("-" * 100)
+    verbose = False
+
+    state = simulate(iterations=20)
+    if verbose:
+        print(state.board)
+        print("-" * 100)
+    new_board = copy.deepcopy(state.board)
 
     while True:
-        state = simulate(start_board=state.board, player=O, iterations=2)
-        print(state.board)
-        print("-" * 100)
+        state = simulate(start_board=new_board, player=O, iterations=2)
+        if verbose:
+            print(state.board)
+            print("-" * 100)
         if state.is_terminal():
-            return state.symbol
+            print(state.board)
+            print("-" * 100)
+
+            return outcome(state)
         
-        state = simulate(start_board=state.board)
-        print(state.board)
-        print("-" * 100)
+        new_board = copy.deepcopy(state.board)
+        state = simulate(start_board=new_board, iterations=20)
+        if verbose:
+            print(state.board)
+            print("-" * 100)
 
         if state.is_terminal():
-            return state.symbol
+            print(state.board)
+            print("-" * 100)
+
+            return outcome(state)
+        new_board = copy.deepcopy(state.board)
+        
+
+def play_game_from_board():
+    board = np.array([[1, 1, 0], [0, -1, 0], [-1, 0, 0]])
+    print(board)
+    print(simulate(start_board=board, iterations=20))
+
+
+def play_with_human():
+    state = simulate(iterations=20)
+    print(state.board)
+    new_board = copy.deepcopy(state.board)
+    while True:
+        sec = input("Insert move \n")
+        m = sec.split()
+        x, y = int(m[0]), int(m[1])
+        new_board[x][y] = O
+        print(new_board)
+        state = simulate(start_board=new_board, iterations=20)
+        print(state.board)
+        new_board = copy.deepcopy(state.board)
+
+
 
 def main():
-    results = {X:0, O:0}
-    for _ in range(100):
-        outcome = play_game()
-        results[outcome] += 1
+    # results = {X:0, O:0, 0:0}
+    # for _ in range(10):
+    #     outcome = play_game()
+    #     results[outcome] += 1
     
-    print(results)
+    # print(results)
+
+    # play_game_from_board()
+
+    play_with_human()
 
 
 
 if __name__ == "__main__":
     main()
+    
     
 
     
