@@ -21,13 +21,14 @@ Algorithms proposed for GitHub implementation
 - [ ]  BFS
 - [x]  Dijkstra
 - [ ]  A*
+- [X]  Held-Karp
 
 ## Artificial Intelligence
 
 ---
 
 - [ ]  Mini-max (alpha-beta)
-- [ ]  Monte Carlo Search Tree
+- [X]  Monte Carlo Search Tree
 
 ## Strings
 
