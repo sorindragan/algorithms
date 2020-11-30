@@ -58,7 +58,7 @@ Algorithms proposed for GitHub implementation
 - [x]  Circular Linked List (Ring buffer)
 - [x]  Stack
 - [x]  Queue
-- [ ]  Binary Tree
+- [X]  Binary Tree
 - [ ]  Self-balancing Binary Tree
 - [ ]  Hash
 
