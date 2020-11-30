@@ -1,3 +1,6 @@
+import copy
+import random
+
 class Node:
 
     def __init__(self, value=None):
@@ -27,30 +30,81 @@ class BST:
                     root.right = Node(value)
                 else:
                     self.add(value, root.right)
-    
-    @staticmethod
-    def find_replace_value(node):
-        left_option = None
-        right_option = None
-        # TODO: find possible replacement values
-        #       decide between them and delete the chosen node
 
-        return 0
+    def delete(self, value, root=None):
+        if not root:
+            node = self.root
+        else:
+            node = root
 
-
-    def delete(self, value):
-        node = self.root
+        children = [node.left.value if node.left else None, node.right.value if node.right else None]
         to_del = None
-
-        if node.value == value:
-            to_del = node
-            # TODO: check if node is a leaf or not
-            replace_val = find_replace_value(to_del)
-            return
         
-        self.delete(node.left)
-        self.delete(node.right)
-    
+        if value in children:
+            to_del, direction = (node.left, "left") if node.left.value == value else (node.right, "right")
+
+            # print(to_del.left, to_del.right)
+            # leaf node 17
+            if (not to_del.left) and (not to_del.right):
+                if direction == "left":
+                    node.left = None
+                else:
+                    node.right = None
+                del(to_del)
+                return
+                
+            # only left child 13
+            if to_del.left and not to_del.right:
+                node.left = copy.deepcopy(to_del.left)
+                del(to_del)
+                return
+            
+            
+            # only right child 7
+            if not to_del.left and to_del.right:
+                node.right = copy.deepcopy(to_del.right)
+                del(to_del)
+                return
+                
+            # tree node 5
+            if to_del.left and to_del.right:
+                lost_values = []
+                self.get_children_by_level(to_del, lost_values)
+                lost_values.remove(to_del.value)
+                # print(lost_values)
+                if direction == "left":
+                    node.left = None
+                else:
+                    node.right = None
+                del(to_del)
+                for val in lost_values:
+                    self.add(val)
+                return
+                       
+        if value < node.value:
+            self.delete(value, node.left)
+        
+        if value > node.value:
+            self.delete(value, node.right)
+
+            
+    def get_children_inorder(self, root, children=[]):
+        if root:
+            self.get_children(root.left, children)
+            children.append(root.value)
+            self.get_children(root.right, children)
+
+    def get_children_by_level(self, root, children=[]):
+        order_q = [root]
+        while order_q:
+            node = order_q.pop(0)
+            children.append(node.value)
+
+            if node.left:
+                order_q.append(node.left)
+            if node.right:
+                order_q.append(node.right)
+
     def level_traversal(self):
         root = self.root
 
@@ -76,17 +130,30 @@ class BST:
 
 def main():
     bst = BST()
+    bst.add(11)
     bst.add(5)
+    bst.add(15)
     bst.add(3)
     bst.add(7)
-    bst.add(6)
-    bst.add(9)
-    bst.add(4)
     bst.add(1)
-    bst.level_traversal()
-    print("--------------------------------")
-    bst.inorder_traversal()
+    bst.add(4)
+    bst.add(9)
+    bst.add(13)
+    bst.add(17)
+    bst.add(12)
 
+    print("Level Traversal")
+    bst.level_traversal()
+    # print("Inorder Traversal")
+    # bst.inorder_traversal()
+    print("--------------------------------")
+    print("DELETING")
+    bst.delete(17)
+    bst.delete(13)
+    bst.delete(5)
+    bst.delete(7)
+    print("Level Traversal")
+    bst.level_traversal()
 
 if __name__ == '__main__':
     main()
