@@ -31,7 +31,7 @@ class Airplane:
     def __repr__(self) -> str:
         return f"P: {self.x} "
     
-    def sense(self, buildngs, noisy=False) -> float:
+    def sense(self, buildngs, noisy=True) -> float:
         noise = 0
         if noisy:
             noise = random.uniform(-1, 1)
@@ -41,10 +41,10 @@ class Airplane:
             intervals))[0]
             )].height + noise
 
-    def move(self, noisy=False) -> None:
+    def move(self, noisy=True) -> None:
         noise = 0
         if noisy:
-            noise = random.uniform(-1, 1)
+            noise = random.uniform(-2, 2)
         self.x = int((self.x + self.velocity + noise) % WORLD_SIZE) 
     
 
@@ -68,10 +68,8 @@ def generate_particles(particle_no=100) -> list:
 
 
 def measure_probability(particle_list, observation, buildings) -> list:
-    print([abs(observation - p.sense(buildings)) for p in particle_list])
     weights = [1/(1 + abs(observation - p.sense(buildings))) for p in particle_list]
     sum_ = sum(weights)
-    print([w/sum_ for w in weights])
     return [w/sum_ for w in weights]
 
 def resample(particles, weights, particle_no=100) -> list:
@@ -88,7 +86,7 @@ def main():
     particle_number = 100
 
     buildings = generate_buildings(10)
-    print(buildings)
+    # print(buildings)
 
     test_h = Airplane()
     test_h.set_position(2)
@@ -112,15 +110,12 @@ def main():
         resampled_particles.sort(key=lambda p: p.x)
         particle_weights = measure_probability(resampled_particles, new_observation, buildings)
         
-        resampled_particles = resample(copy.deepcopy(
-            particles), particle_weights, particle_no=particle_number)
+        resampled_particles = resample(copy.deepcopy(resampled_particles), particle_weights, particle_no=particle_number)
         resampled_particles.sort(key=lambda p: p.x)
 
         print(test_h)
-        print(resampled_particles)
         position_counter = Counter([particle.x for particle in resampled_particles])
-        print(position_counter.most_common(5))
-
+        print(position_counter.most_common(3))
 
 
 if __name__ == "__main__":
