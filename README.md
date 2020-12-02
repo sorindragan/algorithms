@@ -29,6 +29,7 @@ Algorithms proposed for GitHub implementation
 
 - [ ]  Mini-max (alpha-beta)
 - [X]  Monte Carlo Search Tree
+- [X]  Particle Filter
 
 ## Strings
 
