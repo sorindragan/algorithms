@@ -10,6 +10,7 @@ Algorithms proposed for GitHub implementation
 - [ ]  Mergesort
 - [ ]  Quicksort
 - [ ]  Heapsort
+- [ ]  Selectionsort
 - [ ]  Insertionsort
 - [ ]  Radixsort
 
@@ -20,6 +21,7 @@ Algorithms proposed for GitHub implementation
 - [ ]  DFS
 - [ ]  BFS
 - [x]  Dijkstra
+- [ ]  Kruskal
 - [ ]  A*
 - [X]  Held-Karp
 
@@ -71,7 +73,7 @@ Algorithms proposed for GitHub implementation
 - [x]  Decision Tree
 - [ ]  Support Vector Machine
 - [x]  KNN
+- [x]  KMeans
 - [ ]  Naive Bayes
 - [ ]  PCA
 - [ ]  Neural Network
-- [x]  KMeans
